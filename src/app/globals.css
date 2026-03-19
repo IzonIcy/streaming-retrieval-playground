@@ -1,0 +1,212 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f8f4ee;
+  --background-accent: #efe3d6;
+  --foreground: #111111;
+  --card: #fffdf9;
+  --card-border: #2f2418;
+  --accent: #b45c2e;
+  --accent-soft: #e3b996;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-display);
+  --font-mono: var(--font-mono);
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% 18%, #f2c9a8 0%, transparent 24%),
+    radial-gradient(circle at 88% 12%, #d8e2be 0%, transparent 21%),
+    linear-gradient(160deg, var(--background) 0%, var(--background-accent) 100%);
+  color: var(--foreground);
+  font-family: var(--font-display), "Avenir Next", sans-serif;
+}
+
+.page-shell {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1.4rem 1rem 2rem;
+}
+
+.hero-strip {
+  border: 2px solid var(--card-border);
+  background: var(--card);
+  border-radius: 18px;
+  padding: 1.4rem;
+  box-shadow: 8px 8px 0 #1f1a14;
+  animation: rise-in 420ms ease-out;
+}
+
+.eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #5b4632;
+}
+
+.hero-strip h1 {
+  margin: 0.4rem 0 0;
+  font-size: clamp(1.7rem, 5vw, 3rem);
+  line-height: 1.05;
+}
+
+.hero-copy {
+  margin: 0.75rem 0 0;
+  max-width: 70ch;
+  color: #4c3c2a;
+}
+
+.panel-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+.panel {
+  border: 2px solid var(--card-border);
+  border-radius: 16px;
+  background: var(--card);
+  padding: 1rem;
+  box-shadow: 6px 6px 0 #21180f;
+  animation: rise-in 520ms ease-out;
+}
+
+.panel h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.08rem;
+}
+
+.prompt-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.prompt-form textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 2px solid #33291f;
+  padding: 0.72rem;
+  resize: vertical;
+  min-height: 108px;
+  font-size: 0.98rem;
+  background: #fffdfb;
+}
+
+.prompt-form textarea:focus-visible {
+  outline: 3px solid var(--accent-soft);
+  outline-offset: 1px;
+}
+
+.prompt-form button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  background: linear-gradient(120deg, #b7572a 0%, #98471f 100%);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.prompt-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.response-panel pre {
+  min-height: 180px;
+  margin: 0;
+  border: 2px solid #2f2418;
+  border-radius: 12px;
+  background: #171311;
+  color: #f4efe8;
+  padding: 0.8rem;
+  font-family: var(--font-mono), "IBM Plex Mono", monospace;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.metrics-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.metrics-row span {
+  border-radius: 999px;
+  padding: 0.28rem 0.62rem;
+  background: #f0e2d5;
+  border: 1px solid #624834;
+  font-size: 0.8rem;
+}
+
+.chunk-list {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.chunk-card {
+  border: 2px solid #3b2e22;
+  border-radius: 10px;
+  background: #fff8f0;
+  padding: 0.62rem;
+}
+
+.chunk-card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.65rem;
+}
+
+.chunk-card h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.chunk-card p {
+  margin: 0.45rem 0;
+  font-size: 0.9rem;
+  color: #2a2017;
+}
+
+.chunk-card small {
+  font-family: var(--font-mono), "IBM Plex Mono", monospace;
+  color: #594531;
+}
+
+.empty-note,
+.error-text {
+  margin: 0.6rem 0 0;
+  color: #6d2f17;
+}
+
+@media (min-width: 900px) {
+  .panel-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .diagnostics-panel {
+    grid-column: span 2;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
