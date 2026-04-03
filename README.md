@@ -1,6 +1,6 @@
-# Streaming Retrieval Playground
+# PulseSearch
 
-Streaming Retrieval Playground is a compact environment for evaluating retrieval-augmented generation with real-time output streaming and transparent diagnostics.
+PulseSearch is a compact environment for evaluating retrieval-augmented generation with real-time output streaming and transparent diagnostics.
 
 ## Overview
 
