@@ -1,26 +1,24 @@
 # PulseSearch
 
-PulseSearch is a compact environment for evaluating retrieval-augmented generation with real-time output streaming and transparent diagnostics.
+A small RAG (Retrieval-Augmented Generation) demo with real-time streaming and transparent diagnostics.
 
-## Overview
+**Live demo:** [https://pulsesearch.vercel.app/](https://pulsesearch.vercel.app/)
 
-The application follows a straightforward request pipeline:
+## The idea
 
-1. Accept a user question.
-2. Retrieve the most relevant chunks from a local knowledge base.
-3. Generate and stream the answer token by token.
-4. Surface retrieval and latency metrics in the diagnostics panel.
+RAG is everywhere now but most tutorials hide the details. I wanted to build something where you can trace the full path: query comes in → chunks get retrieved → prompt gets assembled → tokens stream back. The whole app is under 200 lines of application code so nothing is hidden.
 
-If `OPENAI_API_KEY` is missing, the app still works in fallback mode and streams a locally generated response from retrieved context.
+The pipeline:
 
-## Technology Stack
+1. You type a question
+2. It searches a local knowledge base using lexical similarity scoring
+3. The top chunks get bundled into a prompt
+4. Response streams back token-by-token via SSE
+5. A diagnostics panel shows you retrieval scores, latency, and which chunks were used
 
-- Next.js (App Router)
-- React + TypeScript
-- OpenAI Node SDK
-- Local in-memory dataset
+If you don't have an API key, it falls back to a deterministic local response generator so you can still test the full interaction loop.
 
-## Quick Start
+## Run it
 
 ```bash
 npm install
@@ -29,22 +27,38 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-## Configure Real Model Streaming
+### Optional: API key for real LLM responses
 
-Create `.env.local` in the project root:
+Create `.env.local`:
 
-```bash
-OPENAI_API_KEY=your_api_key_here
+```
+OPENAI_API_KEY=sk-your-key-here
 ```
 
-Without this key, the API route uses a deterministic fallback stream so you can still test the full interaction loop locally.
+Without this it uses the local fallback mode.
 
-## Project Structure
+## Structure
 
-- `src/app/page.tsx` - Query input, streaming response view, and diagnostics panel
-- `src/app/api/ask/route.ts` - Retrieval + server-sent events streaming endpoint
-- `src/lib/retrieval.ts` - Lexical retrieval scoring and top-k ranking
-- `src/data/knowledgeBase.ts` - Local data source used by retrieval
+```
+src/
+├── app/
+│   ├── page.tsx                # query input + streaming viewer + diagnostics
+│   └── api/ask/route.ts        # POST handler: retrieval → LLM → SSE stream
+├── lib/
+│   └── retrieval.ts            # lexical scoring + top-k ranking
+└── data/
+    └── knowledgeBase.ts        # in-memory document store
+```
+
+## Stack
+
+Next.js 15 App Router, TypeScript, OpenAI Node SDK. SSE streaming via Web ReadableStream. No vector database — the retrieval runs in-process on a local dataset.
+
+## Design choices
+
+- **SSE over WebSockets**: For one-directional token streaming, SSE is simpler and works through standard HTTP proxies. No extra dependencies.
+- **No vector DB**: Eliminating Pinecone/Chroma/etc. makes this trivially runnable. The focus is on the RAG logic, not infrastructure.
+- **Fallback mode**: The app should work without any external API calls. Makes development iteration faster.
 
 ## Validation
 
@@ -52,3 +66,7 @@ Without this key, the API route uses a deterministic fallback stream so you can 
 npm run lint
 npm run build
 ```
+
+## More docs
+
+See `docs/` for deep dives on [retrieval](docs/retrieval.md), [streaming](docs/streaming.md), [performance](docs/perf.md), and [evaluation](docs/evaluation.md).

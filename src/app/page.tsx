@@ -35,6 +35,22 @@ type StreamHandlers = {
   onError: (payload: { message: string }) => void;
 };
 
+async function readRequestError(result: Response): Promise<string> {
+  const contentType = result.headers.get("content-type") ?? "";
+
+  if (contentType.includes("application/json")) {
+    try {
+      const payload = (await result.json()) as { error?: string; message?: string };
+      return payload.error ?? payload.message ?? `Request failed with status ${result.status}.`;
+    } catch {
+      return `Request failed with status ${result.status}.`;
+    }
+  }
+
+  const message = await result.text();
+  return message.trim() || `Request failed with status ${result.status}.`;
+}
+
 function applySseBlock(block: string, handlers: StreamHandlers) {
   const lines = block.split("\n");
   const eventLine = lines.find((line) => line.startsWith("event: "));
@@ -122,7 +138,11 @@ export default function Home() {
         body: JSON.stringify({ query }),
       });
 
-      if (!result.ok || !result.body) {
+      if (!result.ok) {
+        throw new Error(await readRequestError(result));
+      }
+
+      if (!result.body) {
         throw new Error("Could not start stream.");
       }
 

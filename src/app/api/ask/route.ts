@@ -12,6 +12,20 @@ type StreamMetrics = {
   firstTokenLatencyMs: number | null;
 };
 
+async function parseAskBody(request: Request): Promise<AskBody | null> {
+  try {
+    const body = await request.json();
+
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return null;
+    }
+
+    return body as AskBody;
+  } catch {
+    return null;
+  }
+}
+
 function sseEvent(event: string, data: unknown): string {
   return `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
 }
@@ -95,7 +109,12 @@ function buildFallbackAnswer(query: string, contextText: string): string {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  const body = (await request.json()) as AskBody;
+  const body = await parseAskBody(request);
+
+  if (!body) {
+    return Response.json({ error: "Request body must be a JSON object." }, { status: 400 });
+  }
+
   const query = body.query?.trim() ?? "";
 
   if (!query) {
